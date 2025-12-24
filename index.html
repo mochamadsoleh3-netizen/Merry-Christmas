@@ -5,34 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>致我的朋友的一封信</title>
     <style>
-        * { -webkit-tap-highlight-color: transparent; } /* 清除移动端点击高亮 */
         body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: #000; overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
-            font-family: 'PingFang SC', 'STHeiti', 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1a2a6c, #b21f1f, #fdbb2d); /* 备用 */
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            height: 100vh;
+            font-family: 'Arial', sans-serif;
+            perspective: 1000px; /* 为3D旋转提供透视 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-
         canvas {
-            display: block; position: absolute; z-index: 1;
-            opacity: 0; transition: opacity 2s ease;
+            display: block;
+            z-index: 5 !important; /* 圣诞树层级 */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 2s ease;
         }
 
-        /* --- 祝福语 --- */
         .greetings {
-            position: absolute; top: 12%; width: 100%;
-            color: #fff; text-align: center; z-index: 2;
-            opacity: 0; transition: opacity 3s ease 1.2s;
-            pointer-events: none;
+            display: none; /* 隐藏原有文字，改用粒子效果 */
         }
         .greetings h1 {
             font-size: 1.8rem; /* 适配手机字号 */
             letter-spacing: 4px;
-            text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(52,152,219,0.5);
+            /* 流光金字效果 */
+            background: linear-gradient(to right, #fff, #f1c40f, #fff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: shine 3s linear infinite;
+            text-shadow: 0 0 20px rgba(241, 196, 15, 0.5);
             margin: 0; padding: 0 20px;
         }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
         .greetings p {
-            font-size: 0.9rem; opacity: 0.6; margin-top: 10px; letter-spacing: 2px;
+            font-size: 0.9rem; opacity: 0.8; margin-top: 10px; letter-spacing: 2px;
+            color: #bdc3c7;
+            text-shadow: 0 0 5px rgba(255,255,255,0.3);
+        }
+
+        /* 信封打开时的光效 */
+        .envelope-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 10px; height: 10px;
+            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 1; /* 在信封后面 */
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .envelope-wrapper.open-anim::after {
+            animation: burst 1s ease-out forwards;
+        }
+
+        @keyframes burst {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(50); opacity: 0; }
         }
 
         /* --- 移动端信封 --- */
@@ -144,6 +186,84 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+
+        /* 圣诞老人和雪橇动画 - 3D 环绕 */
+        .orbit-system {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            transform-style: preserve-3d;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        .show-content .orbit-system {
+            opacity: 1;
+        }
+
+        .orbit-arm {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-style: preserve-3d;
+            animation: orbit-rotate linear infinite;
+        }
+
+        .santa-fly {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 350px; 
+            height: 100px;
+            pointer-events: none;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
+            /* 初始位置：向右偏移半径，并旋转90度以切向飞行 */
+            transform: translateX(var(--radius)) rotateY(90deg);
+        }
+
+        /* 队伍 1：主队 */
+        .team-1-arm {
+            animation-duration: 20s;
+            --radius: 450px;
+        }
+        .team-1 .santa-fly {
+             /* 保持原有缩放 */
+             transform: translateX(var(--radius)) rotateY(90deg) scale(1);
+        }
+        /* 队伍 2：僚机 */
+        .team-2-arm {
+            animation-duration: 25s;
+            animation-delay: -5s; /* 错开位置 */
+            --radius: 550px;
+            top: -100px; /* 高度差 */
+        }
+        .team-2 .santa-fly {
+            transform: translateX(var(--radius)) rotateY(90deg) scale(0.7);
+            opacity: 0.8;
+        }
+        /* 队伍 3：高空巡逻 */
+        .team-3-arm {
+            animation-duration: 30s;
+            animation-delay: -15s;
+            --radius: 650px;
+            top: -200px;
+        }
+        .team-3 .santa-fly {
+            transform: translateX(var(--radius)) rotateY(90deg) scale(0.5);
+            opacity: 0.6;
+        }
+
+        @keyframes orbit-rotate {
+            0% { transform: rotateY(0deg); z-index: 10; } /* 右侧 (前) */
+            25% { z-index: 1; } /* 后方开始 */
+            50% { transform: rotateY(180deg); z-index: 1; } /* 左侧 (后) */
+            75% { z-index: 10; } /* 前方开始 */
+            100% { transform: rotateY(360deg); z-index: 10; } /* 回到右侧 */
+        }
+        
     </style>
 </head>
 <body>
@@ -170,16 +290,98 @@
         <p>✦ 平安喜乐 · 万事胜意 ✦</p>
     </div>
     
+     <!-- 3D 环绕系统 -->
+     <div class="orbit-system">
+         <!-- 队伍 1：主队 -->
+         <div class="orbit-arm team-1-arm">
+             <div class="santa-fly team-1">
+                 <svg viewBox="0 0 350 100" class="santa-svg">
+                     <defs>
+                         <linearGradient id="magic-trail-1" x1="0%" y1="0%" x2="100%" y2="0%">
+                             <stop offset="0%" style="stop-color:rgba(255,255,200,0)" />
+                             <stop offset="100%" style="stop-color:rgba(255,215,0,0.8)" />
+                         </linearGradient>
+                     </defs>
+                     <g class="reindeers">
+                         <g transform="translate(130, 42)"><path fill="#fff" d="M30,10 Q35,5 40,10 T50,10 L50,25 L45,40 L40,25 L35,25 L30,40 L25,25 Z" class="deer-body"/><path fill="none" stroke="#fff" stroke-width="2" d="M40,10 L35,0 M45,10 L50,0" class="antlers"/></g>
+                         <g transform="translate(180, 40)"><path fill="#fff" d="M30,10 Q35,5 40,10 T50,10 L50,25 L45,40 L40,25 L35,25 L30,40 L25,25 Z" class="deer-body"/><path fill="none" stroke="#fff" stroke-width="2" d="M40,10 L35,0 M45,10 L50,0" class="antlers"/></g>
+                         <g transform="translate(230, 38)"><path fill="#fff" d="M30,10 Q35,5 40,10 T50,10 L50,25 L45,40 L40,25 L35,25 L30,40 L25,25 Z" class="deer-body"/><path fill="none" stroke="#fff" stroke-width="2" d="M40,10 L35,0 M45,10 L50,0" class="antlers"/></g>
+                         <g transform="translate(280, 35)"><path fill="#fff" d="M30,10 Q35,5 40,10 T50,10 L50,25 L45,40 L40,25 L35,25 L30,40 L25,25 Z" class="deer-body"/><path fill="none" stroke="#fff" stroke-width="2" d="M40,10 L35,0 M45,10 L50,0" class="antlers"/></g>
+                     </g>
+                     <path fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1" d="M90,45 L300,45" />
+                     <g transform="translate(10, 40)" class="sleigh">
+                         <path fill="none" stroke="#fff" stroke-width="3" d="M0,40 Q20,40 40,35 T80,30" />
+                         <path fill="none" stroke="#fff" stroke-width="2" d="M10,40 L10,25 M60,33 L60,20" />
+                         <path fill="#d63031" d="M10,25 Q10,10 30,10 L70,10 Q90,10 90,20 L80,30 L10,30 Z" />
+                         <circle cx="50" cy="5" r="8" fill="#ff7675" />
+                         <path fill="#d63031" d="M42,13 L58,13 L50,0 Z" />
+                         <path fill="#fff" d="M50,13 Q50,20 50,20" stroke="#fff" stroke-width="4" />
+                     </g>
+                 </svg>
+                 <div class="particles"></div>
+             </div>
+         </div>
+
+         <!-- 队伍 2：僚机 -->
+         <div class="orbit-arm team-2-arm">
+             <div class="santa-fly team-2">
+                 <svg viewBox="0 0 350 100" class="santa-svg">
+                     <g class="reindeers">
+                         <g transform="translate(130, 42)"><path fill="#eee" d="M30,10 Q35,5 40,10 T50,10 L50,25 L45,40 L40,25 L35,25 L30,40 L25,25 Z" class="deer-body"/><path fill="none" stroke="#eee" stroke-width="2" d="M40,10 L35,0 M45,10 L50,0" class="antlers"/></g>
+                         <g transform="translate(180, 40)"><path fill="#eee" d="M30,10 Q35,5 40,10 T50,10 L50,25 L45,40 L40,25 L35,25 L30,40 L25,25 Z" class="deer-body"/><path fill="none" stroke="#eee" stroke-width="2" d="M40,10 L35,0 M45,10 L50,0" class="antlers"/></g>
+                         <g transform="translate(230, 38)"><path fill="#eee" d="M30,10 Q35,5 40,10 T50,10 L50,25 L45,40 L40,25 L35,25 L30,40 L25,25 Z" class="deer-body"/><path fill="none" stroke="#eee" stroke-width="2" d="M40,10 L35,0 M45,10 L50,0" class="antlers"/></g>
+                     </g>
+                     <path fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1" d="M90,45 L250,45" />
+                     <g transform="translate(10, 40)" class="sleigh">
+                         <path fill="none" stroke="#eee" stroke-width="3" d="M0,40 Q20,40 40,35 T80,30" />
+                         <path fill="none" stroke="#eee" stroke-width="2" d="M10,40 L10,25 M60,33 L60,20" />
+                         <path fill="#c0392b" d="M10,25 Q10,10 30,10 L70,10 Q90,10 90,20 L80,30 L10,30 Z" />
+                         <circle cx="50" cy="5" r="8" fill="#ff7675" />
+                         <path fill="#c0392b" d="M42,13 L58,13 L50,0 Z" />
+                         <path fill="#eee" d="M50,13 Q50,20 50,20" stroke="#eee" stroke-width="4" />
+                     </g>
+                 </svg>
+                 <div class="particles"></div>
+             </div>
+         </div>
+
+         <!-- 队伍 3：高空巡逻 -->
+         <div class="orbit-arm team-3-arm">
+             <div class="santa-fly team-3">
+                 <svg viewBox="0 0 350 100" class="santa-svg">
+                     <g class="reindeers">
+                         <g transform="translate(180, 40)"><path fill="#ddd" d="M30,10 Q35,5 40,10 T50,10 L50,25 L45,40 L40,25 L35,25 L30,40 L25,25 Z" class="deer-body"/><path fill="none" stroke="#ddd" stroke-width="2" d="M40,10 L35,0 M45,10 L50,0" class="antlers"/></g>
+                         <g transform="translate(230, 38)"><path fill="#ddd" d="M30,10 Q35,5 40,10 T50,10 L50,25 L45,40 L40,25 L35,25 L30,40 L25,25 Z" class="deer-body"/><path fill="none" stroke="#ddd" stroke-width="2" d="M40,10 L35,0 M45,10 L50,0" class="antlers"/></g>
+                     </g>
+                     <path fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1" d="M90,45 L250,45" />
+                     <g transform="translate(10, 40)" class="sleigh">
+                         <path fill="none" stroke="#ddd" stroke-width="3" d="M0,40 Q20,40 40,35 T80,30" />
+                         <path fill="none" stroke="#ddd" stroke-width="2" d="M10,40 L10,25 M60,33 L60,20" />
+                         <path fill="#a93226" d="M10,25 Q10,10 30,10 L70,10 Q90,10 90,20 L80,30 L10,30 Z" />
+                         <circle cx="50" cy="5" r="8" fill="#ff7675" />
+                         <path fill="#a93226" d="M42,13 L58,13 L50,0 Z" />
+                         <path fill="#ddd" d="M50,13 Q50,20 50,20" stroke="#ddd" stroke-width="4" />
+                     </g>
+                 </svg>
+                 <div class="particles"></div>
+             </div>
+         </div>
+     </div>
+    
     <canvas id="canvas"></canvas>
 
     <script>
+        let isOpened = false; // 防止重复触发
+
         function openLetter() {
+            if (isOpened) return;
+            isOpened = true;
+
             const wrapper = document.getElementById('envelopeWrapper');
             wrapper.classList.add('open-anim');
             
-            // 尝试播放音乐
-            const bgm = document.getElementById('bgm');
-            bgm.play().catch(e => console.log('播放失败，请确保目录下有 music.mp3 文件', e));
+            // 播放音乐逻辑（独立处理，不影响动画）
+            playMusicSafe();
             
             setTimeout(() => {
                 document.body.classList.add('show-content');
@@ -188,42 +390,201 @@
             }, 800);
         }
 
+        function playMusicSafe() {
+            try {
+                const bgm = document.getElementById('bgm');
+                if (!bgm) return;
+                
+                const playPromise = bgm.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        const btn = document.getElementById('musicBtn');
+                        if (btn) btn.style.display = 'block';
+                    }).catch(e => {
+                        console.log('自动播放被拦截或文件不存在，用户需手动播放', e);
+                        // 即使自动播放失败，也显示按钮，让用户可以手动点击播放
+                        const btn = document.getElementById('musicBtn');
+                        if (btn) {
+                            btn.style.display = 'block';
+                            btn.classList.add('paused'); // 初始设为暂停状态图标
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error('音乐播放逻辑错误:', err);
+            }
+        }
+
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        let width, height, particles = [], snowParticles = [];
-        const treeCount = 5;
+        let width, height, particles = [], snowParticles = [], stars = [];
+        let textParticles = []; // 文字粒子数组
         let rotationAngle = 0;
 
-        const treeColors = [
-            { r: 46, g: 204, b: 113 }, // 绿
-            { r: 241, g: 196, b: 15 }, // 金
-            { r: 52, g: 152, b: 219 }, // 蓝
-            { r: 162, g: 155, b: 254 }, // 紫
-            { r: 255, g: 118, b: 117 }  // 红
+        // 祝福语列表（带颜色）
+        const greetingsList = [
+            { text: "追光而遇 沐光而行", color: "#e74c3c" }, // 圣诞红
+            { text: "顺遂无虞 皆得所愿", color: "#f1c40f" }, // 金色
+            { text: "辞暮尔尔 烟火年年", color: "#2ecc71" }, // 翠绿
+            { text: "岁岁年年 共欢同乐", color: "#3498db" }, // 天蓝
+            { text: "浅予深深 长乐未央", color: "#9b59b6" }, // 紫色
+            { text: "好运连连", color: "#e67e22" }, // 橙色
+            { text: "未来可期", color: "#e84393" }  // 粉色
         ];
+        let currentGreetingIndex = 0;
 
-        class Particle {
-            constructor(tx, ty, tz, colorStr, size, treeId) {
-                this.tx = tx; this.ty = ty; this.tz = tz;
-                this.colorStr = colorStr; this.size = size;
-                this.orbitAngle = (treeId / treeCount) * Math.PI * 2;
-                this.orbitRadius = Math.min(window.innerWidth * 0.8, 400); // 适配手机宽度
+        // 树的配色方案
+        const leafColors = ['#2d6a4f', '#40916c', '#52b788', '#74c69d']; // 深浅不一的绿色
+        const ornamentColors = ['#d00000', '#ffba08', '#3f88c5']; // 红、金、蓝装饰球
+
+        class TextParticle {
+            constructor(x, y) {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.tx = x; // 目标X
+                this.ty = y; // 目标Y
+                this.color = '#f1c40f'; // 金色
+                this.size = Math.random() * 2 + 1;
+                this.speed = Math.random() * 0.08 + 0.02;
+            }
+            update() {
+                // 缓动动画：向目标位置移动
+                this.x += (this.tx - this.x) * this.speed;
+                this.y += (this.ty - this.y) * this.speed;
             }
             render() {
-                let angle = rotationAngle + this.orbitAngle;
-                let worldX = Math.cos(angle) * this.orbitRadius + this.tx;
-                let worldZ = Math.sin(angle) * this.orbitRadius + this.tz;
-                let worldY = this.ty;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // 离屏 Canvas 用于采样文字
+        const offCanvas = document.createElement('canvas');
+        const offCtx = offCanvas.getContext('2d');
+
+        function initText(data) {
+            const text = data.text;
+            const color = data.color;
+
+            offCanvas.width = width;
+            offCanvas.height = 200; // 文字区域高度
+            offCtx.clearRect(0, 0, width, 200);
+            
+            // 设置文字样式
+            let fontSize = window.innerWidth < 500 ? 40 : 60;
+            offCtx.font = `bold ${fontSize}px "Microsoft YaHei", sans-serif`;
+            offCtx.fillStyle = '#fff';
+            offCtx.textAlign = 'center';
+            offCtx.textBaseline = 'middle';
+            offCtx.fillText(text, width / 2, 100);
+
+            // 获取像素数据
+            const imageData = offCtx.getImageData(0, 0, width, 200).data;
+            const gap = 4; // 采样间隔，越小粒子越密
+            const newTargets = [];
+
+            for (let y = 0; y < 200; y += gap) {
+                for (let x = 0; x < width; x += gap) {
+                    const index = (y * width + x) * 4;
+                    if (imageData[index + 3] > 128) { // 如果 Alpha > 128，说明有文字
+                        // 目标位置：屏幕顶部 + 偏移
+                        newTargets.push({ x: x, y: y + height * 0.15 }); 
+                    }
+                }
+            }
+
+            // 更新粒子数组
+            if (textParticles.length < newTargets.length) {
+                // 如果现有粒子不够，补齐
+                const diff = newTargets.length - textParticles.length;
+                for (let i = 0; i < diff; i++) {
+                    textParticles.push(new TextParticle(newTargets[i].x, newTargets[i].y));
+                }
+            }
+            
+            // 分配目标
+            for (let i = 0; i < textParticles.length; i++) {
+                if (i < newTargets.length) {
+                    textParticles[i].tx = newTargets[i].x;
+                    textParticles[i].ty = newTargets[i].y;
+                    textParticles[i].color = color; // 使用配置的颜色
+                    // 稍微增加一点速度，让拼凑更干脆
+                    textParticles[i].speed = Math.random() * 0.05 + 0.03;
+                } else {
+                    // 多余的粒子散开
+                    textParticles[i].tx = Math.random() * width;
+                    textParticles[i].ty = Math.random() * height;
+                    textParticles[i].color = 'rgba(255,255,255,0)'; // 隐藏
+                }
+            }
+        }
+
+        class Particle {
+            constructor(x, y, z, color, size, type) {
+                this.x = x; this.y = y; this.z = z;
+                this.color = color; this.size = size;
+                this.type = type; // 'leaf', 'ornament', 'star'
+                
+                // 闪烁参数
+                this.twinkleSpeed = Math.random() * 0.05 + 0.02;
+                this.twinkleOffset = Math.random() * Math.PI * 2;
+            }
+            render() {
+                // 绕Y轴旋转
+                const cos = Math.cos(rotationAngle);
+                const sin = Math.sin(rotationAngle);
+                const rx = this.x * cos - this.z * sin;
+                const rz = this.x * sin + this.z * cos;
+                const ry = this.y;
+
                 const perspective = 800;
-                const scale = perspective / (perspective + worldZ + 1000);
-                const screenX = worldX * scale + width / 2;
-                const screenY = worldY * scale + height / 2 + 120;
+                const scale = perspective / (perspective + rz + 1000);
+                const screenX = rx * scale + width / 2;
+                const screenY = ry * scale + height / 2 + 200; // 树变大了，整体下移让位置更协调
+                
+                // 闪烁逻辑
+                let alpha = 1;
+                if (this.type === 'leaf') {
+                    // 叶子微闪
+                    alpha = 0.8 + Math.sin(Date.now() * 0.002 + this.twinkleOffset) * 0.2;
+                } else if (this.type === 'ornament') {
+                    // 装饰球高亮
+                    alpha = 0.9 + Math.sin(Date.now() * 0.005 + this.twinkleOffset) * 0.1;
+                }
+
                 if (scale > 0) {
-                    ctx.fillStyle = this.colorStr + (scale * 1.1) + ")";
+                    ctx.fillStyle = this.color;
+                    ctx.globalAlpha = alpha;
                     ctx.beginPath();
                     ctx.arc(screenX, screenY, this.size * scale, 0, Math.PI * 2);
                     ctx.fill();
+                    ctx.globalAlpha = 1; // 重置
                 }
+            }
+        }
+
+        class Star {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height * 0.6; // 星星主要分布在屏幕上半部分
+                this.size = Math.random() * 1.5;
+                this.blinkSpeed = Math.random() * 0.05 + 0.01;
+                this.alpha = Math.random();
+            }
+            render() {
+                this.alpha += this.blinkSpeed;
+                if(this.alpha > 1 || this.alpha < 0) this.blinkSpeed = -this.blinkSpeed;
+                
+                const currentAlpha = Math.abs(this.alpha);
+                ctx.fillStyle = `rgba(255, 255, 255, ${currentAlpha * 0.8})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
 
@@ -236,8 +597,9 @@
                 this.y = Math.random() * -height; // 从屏幕上方随机位置开始
                 this.z = Math.random() * 0.8 + 0.2; // 深度系数，影响大小和速度
                 this.size = Math.random() * 2 + 1;
-                this.speedY = Math.random() * 1.5 + 0.5;
-                this.speedX = (Math.random() - 0.5) * 0.5;
+                // 雪花加速：速度范围改为 2.5 ~ 5.5
+                this.speedY = Math.random() * 3 + 2.5; 
+                this.speedX = (Math.random() - 0.5) * 1.5; // 稍微增加横向飘动
                 this.opacity = Math.random() * 0.6 + 0.4;
             }
             update() {
@@ -245,7 +607,7 @@
                 this.x += this.speedX * this.z;
                 
                 // 飘出屏幕底部或左右边界太远则重置
-                if (this.y > height || this.x > width + 50 || this.x < -50) {
+                if (this.y > height || this.x > width + 100 || this.x < -100) {
                     this.reset();
                     this.y = -10; // 确保从顶部重新开始
                 }
@@ -264,6 +626,64 @@
             height = canvas.height = window.innerHeight;
             particles = [];
             snowParticles = []; // 重置雪花数组
+            stars = []; // 重置星星数组
+            
+            // 初始化星星
+            const starCount = window.innerWidth < 500 ? 50 : 100;
+            for(let i=0; i<starCount; i++) {
+                stars.push(new Star());
+            }
+
+            // 初始化更逼真的3D圣诞树
+            // 增大尺寸
+            const treeHeight = window.innerWidth < 500 ? 550 : 700; // 手机上稍微小一点，PC上大一点
+            const maxRadius = window.innerWidth < 500 ? 220 : 300;
+            // 增加粒子密度
+            const particleCount = window.innerWidth < 500 ? 1800 : 3000;
+            
+            for(let i = 0; i < particleCount; i++) {
+                // 使用螺旋分布生成圆锥体
+                const h = Math.random(); // 0 (顶端) 到 1 (底部)
+                const y = -treeHeight + h * treeHeight; // 映射到Y轴
+                const radius = h * maxRadius; // 半径随高度线性增加
+                
+                // 螺旋角度
+                const angle = i * 0.1 + Math.random() * 0.5;
+                const r = Math.random() * radius; // 填充内部
+                
+                const x = Math.cos(angle) * r;
+                const z = Math.sin(angle) * r;
+                
+                // 决定粒子类型
+                const typeRand = Math.random();
+                let color, size, type;
+                
+                if (typeRand > 0.95) {
+                    // 5% 是装饰球
+                    color = ornamentColors[Math.floor(Math.random() * ornamentColors.length)];
+                    size = Math.random() * 3 + 2;
+                    type = 'ornament';
+                    // 装饰球倾向于在外层
+                    if (r < radius * 0.8) { 
+                        // 如果随机在内部，强制移到表面
+                        const surfaceR = radius * (0.9 + Math.random() * 0.1);
+                        const sx = Math.cos(angle) * surfaceR;
+                        const sz = Math.sin(angle) * surfaceR;
+                        particles.push(new Particle(sx, y, sz, color, size, type));
+                        continue;
+                    }
+                } else {
+                    // 95% 是叶子
+                    color = leafColors[Math.floor(Math.random() * leafColors.length)];
+                    size = Math.random() * 2 + 0.5;
+                    type = 'leaf';
+                }
+                
+                particles.push(new Particle(x, y, z, color, size, type));
+            }
+            
+            // 树顶大星星
+            particles.push(new Particle(0, -treeHeight - 10, 0, '#ffd700', 8, 'ornament'));
             
             // 初始化雪花
             const snowCount = window.innerWidth < 500 ? 100 : 200;
@@ -274,29 +694,38 @@
                 snowParticles.push(snow);
             }
 
-            for (let t = 0; t < treeCount; t++) {
-                const baseColor = treeColors[t];
-                const pCount = window.innerWidth < 500 ? 1200 : 2000; // 手机端减少粒子数保证流畅
-                for (let i = 0; i < pCount; i++) {
-                    const h = Math.random(); 
-                    const radius = (1 - h) * 160; 
-                    const angle = Math.random() * Math.PI * 2;
-                    const x = Math.cos(angle) * radius * Math.pow(Math.random(), 0.6);
-                    const z = Math.sin(angle) * radius * Math.pow(Math.random(), 0.6);
-                    const y = -h * 450; 
-                    particles.push(new Particle(x, y, z, `rgba(${baseColor.r},${baseColor.g},${baseColor.b},`, Math.random()*2+1, t));
-                }
-                // 树顶
-                particles.push(new Particle(0, -465, 0, `rgba(255,255,255,`, 4, t));
-            }
+            // 初始化第一句祝福语
+            initText(greetingsList[currentGreetingIndex]);
+            
+            // 启动定时器切换祝福语
+            setInterval(() => {
+                currentGreetingIndex = (currentGreetingIndex + 1) % greetingsList.length;
+                initText(greetingsList[currentGreetingIndex]);
+            }, 10000); // 延长到10秒，确保有足够时间拼凑和展示
         }
 
         function animate() {
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.fillStyle = 'rgba(0, 0, 10, 0.2)';
-            ctx.fillRect(0, 0, width, height);
+            if (!isOpened) return; // 信封未打开不播放动画
+
+            // 清除画布（完全透明，以显示 CSS 背景）
+            ctx.clearRect(0, 0, width, height);
+            
+            // 渲染星星
             ctx.globalCompositeOperation = 'lighter';
-            particles.forEach(p => p.render());
+            stars.forEach(s => s.render());
+
+            // 渲染树
+            ctx.globalCompositeOperation = 'source-over';
+            particles.forEach(p => {
+                // p.update(); // Particle 没有 update 方法，旋转逻辑在 render 中
+                p.render();
+            });
+            
+            // 渲染文字粒子
+            textParticles.forEach(p => {
+                p.update();
+                p.render();
+            });
             
             // 渲染雪花
             snowParticles.forEach(p => {
