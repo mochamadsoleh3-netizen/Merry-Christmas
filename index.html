@@ -169,18 +169,42 @@
 
         /* 音乐控制按钮 */
         .music-control {
-            position: absolute; top: 20px; right: 20px;
-            width: 30px; height: 30px; z-index: 20;
-            cursor: pointer; opacity: 0.8;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            font-size: 24px;
+            cursor: pointer;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
             display: none; /* 默认隐藏，播放成功后显示 */
         }
-        .music-control svg {
-            width: 100%; height: 100%; fill: #fff;
-            animation: rotate 4s linear infinite;
+        .music-control:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
         }
-        .music-control.paused svg {
-            animation-play-state: paused;
+        .music-text {
+            font-size: 14px;
+            font-family: sans-serif;
+            display: none; /* 默认隐藏文字，小屏只显图标 */
+        }
+        .music-control.paused {
             opacity: 0.5;
+        }
+        .music-control.paused .music-icon {
+            animation-play-state: paused;
+        }
+        .music-icon {
+            display: inline-block;
+            animation: rotate 4s linear infinite;
         }
         @keyframes rotate {
             from { transform: rotate(0deg); }
@@ -256,6 +280,122 @@
             opacity: 0.6;
         }
 
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .envelope-wrapper {
+                transform: scale(0.8); /* 进一步缩小信封 */
+            }
+            
+            /* 缩小圣诞老人轨道半径，使其在手机屏幕内可见 */
+            .team-1-arm { --radius: 180px; }
+            .team-2-arm { --radius: 240px; top: -60px; }
+            .team-3-arm { --radius: 300px; top: -120px; }
+            
+            .santa-fly {
+                width: 200px; /* 缩小圣诞老人尺寸 */
+                height: 60px;
+            }
+            
+            .greetings h1 {
+                font-size: 1.5rem; /* 稍微调小标题 */
+            }
+        }
+
+        /* 平板和窄屏 PC 适配 */
+        @media (min-width: 769px) and (max-width: 1200px) {
+            .team-1-arm { --radius: 350px; }
+            .team-2-arm { --radius: 450px; top: -80px; }
+            .team-3-arm { --radius: 550px; top: -160px; }
+            
+            .santa-fly {
+                width: 280px;
+                height: 80px;
+            }
+        }
+
+        /* 角落装饰纹理 */
+        .corner-decoration {
+            position: fixed;
+            width: 150px;
+            height: 150px;
+            pointer-events: none;
+            z-index: 15;
+            background-repeat: no-repeat;
+            background-size: contain;
+            opacity: 0.8;
+            display: none; /* 默认隐藏，仅PC显示 */
+        }
+        
+        /* 使用CSS绘制简单的角落花纹，无需外部图片 */
+        #corner-tl {
+            top: 20px; left: 20px;
+            border-top: 2px solid rgba(255, 215, 0, 0.5);
+            border-left: 2px solid rgba(255, 215, 0, 0.5);
+            background: radial-gradient(circle at top left, transparent 60%, rgba(255, 215, 0, 0.1) 70%);
+            border-top-left-radius: 20px;
+        }
+        #corner-tr {
+            top: 20px; right: 20px;
+            border-top: 2px solid rgba(255, 215, 0, 0.5);
+            border-right: 2px solid rgba(255, 215, 0, 0.5);
+            background: radial-gradient(circle at top right, transparent 60%, rgba(255, 215, 0, 0.1) 70%);
+            border-top-right-radius: 20px;
+        }
+        #corner-bl {
+            bottom: 20px; left: 20px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.5);
+            border-left: 2px solid rgba(255, 215, 0, 0.5);
+            background: radial-gradient(circle at bottom left, transparent 60%, rgba(255, 215, 0, 0.1) 70%);
+            border-bottom-left-radius: 20px;
+        }
+        #corner-br {
+            bottom: 20px; right: 20px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.5);
+            border-right: 2px solid rgba(255, 215, 0, 0.5);
+            background: radial-gradient(circle at bottom right, transparent 60%, rgba(255, 215, 0, 0.1) 70%);
+            border-bottom-right-radius: 20px;
+        }
+
+        /* 底部版权信息 */
+        .footer-copyright {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            font-family: sans-serif;
+            pointer-events: none;
+            z-index: 10;
+            display: none; /* 默认隐藏 */
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* 大屏 PC 适配 */
+        @media (min-width: 1201px) {
+            .corner-decoration { display: block; } /* PC端显示角落装饰 */
+            .music-text { display: block; }
+            .footer-copyright { display: block; } /* PC端显示底部版权 */
+            
+            .envelope-wrapper {
+                transform: scale(1.5); /* 大屏放大信封 */
+            }
+            .envelope {
+                cursor: pointer; /* 确保鼠标手型 */
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            /* 悬停效果：仅在未打开时生效 */
+            .envelope-wrapper:not(.open-anim) .envelope:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            }
+            
+            .team-1-arm { --radius: 600px; }
+            .team-2-arm { --radius: 750px; top: -120px; }
+            .team-3-arm { --radius: 900px; top: -240px; }
+        }
+
         @keyframes orbit-rotate {
             0% { transform: rotateY(0deg); z-index: 10; } /* 右侧 (前) */
             25% { z-index: 1; } /* 后方开始 */
@@ -274,6 +414,20 @@
         <svg viewBox="0 0 24 24">
             <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
         </svg>
+    </div>
+
+    <div id="corner-tl" class="corner-decoration"></div>
+    <div id="corner-tr" class="corner-decoration"></div>
+    <div id="corner-bl" class="corner-decoration"></div>
+    <div id="corner-br" class="corner-decoration"></div>
+    
+    <div class="footer-copyright">
+        Made with ❤️ for You | Merry Christmas
+    </div>
+
+    <div class="music-control" onclick="toggleMusic()">
+        <span class="music-icon">🎵</span>
+        <span class="music-text">Play Music</span>
     </div>
 
     <div class="envelope-wrapper" id="envelopeWrapper">
@@ -417,9 +571,54 @@
 
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        let width, height, particles = [], snowParticles = [], stars = [];
+        let width, height, particles = [], snowParticles = [], stars = [], shootingStars = [];
         let textParticles = []; // 文字粒子数组
         let rotationAngle = 0;
+        let mouseX = 0, mouseY = 0; // 鼠标位置用于视差
+        let parallaxX = 0, parallaxY = 0; // 视差偏移量
+        
+        // 鼠标拖尾粒子系统
+        class TrailParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 1.5;
+                this.speedY = (Math.random() - 0.5) * 1.5;
+                this.life = 1.0;
+                this.decay = Math.random() * 0.03 + 0.02;
+                this.color = `hsl(${Math.random() * 60 + 30}, 100%, 70%)`; // 金黄色系
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= this.decay;
+                this.size *= 0.95;
+            }
+            render() {
+                if (this.life <= 0) return;
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        let trailParticles = [];
+
+        // 鼠标移动监听（PC端视差效果 + 拖尾）
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.05; // 限制移动范围
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.05;
+            
+            // 添加拖尾粒子
+            if (window.innerWidth > 768) { // 仅PC端启用
+                for(let i=0; i<3; i++) {
+                    trailParticles.push(new TrailParticle(e.clientX, e.clientY));
+                }
+            }
+        });
 
         // 祝福语列表（带颜色）
         const greetingsList = [
@@ -464,33 +663,86 @@
         const offCanvas = document.createElement('canvas');
         const offCtx = offCanvas.getContext('2d');
 
+        function getSplitText(text) {
+            if (text.includes(' ')) {
+                const parts = text.split(' ');
+                return [parts[0], parts[1]];
+            }
+            if (text.length >= 4) { 
+                const mid = Math.floor(text.length / 2);
+                return [text.substring(0, mid), text.substring(mid)];
+            }
+            return [text, text]; // 兜底：如果文字太短无法分割，则两侧显示相同内容
+        }
+
         function initText(data) {
             const text = data.text;
             const color = data.color;
-
-            offCanvas.width = width;
-            offCanvas.height = 200; // 文字区域高度
-            offCtx.clearRect(0, 0, width, 200);
             
-            // 设置文字样式
-            let fontSize = window.innerWidth < 500 ? 40 : 60;
-            offCtx.font = `bold ${fontSize}px "Microsoft YaHei", sans-serif`;
-            offCtx.fillStyle = '#fff';
-            offCtx.textAlign = 'center';
-            offCtx.textBaseline = 'middle';
-            offCtx.fillText(text, width / 2, 100);
+            const isSmall = width < 768; // 移动端判断
+            
+            // 调整离屏 Canvas 尺寸以容纳竖排文字
+            offCanvas.width = width;
+            // 竖排文字可能很高，PC端增加高度；移动端保持横排较矮
+            offCanvas.height = isSmall ? 200 : height; 
+            offCtx.clearRect(0, 0, width, offCanvas.height);
+            
+            let offsetY = 0;
+
+            if (isSmall) {
+                // 移动端：保持原有顶部居中逻辑（横排）
+                let fontSize = 60;
+                if (width < 500) fontSize = 40;
+                else fontSize = 50;
+
+                offCtx.font = `bold ${fontSize}px "Microsoft YaHei", sans-serif`;
+                offCtx.fillStyle = '#fff';
+                offCtx.textAlign = 'center';
+                offCtx.textBaseline = 'middle';
+                offCtx.fillText(text, width / 2, 100);
+                
+                offsetY = height * 0.15; // 移动端偏上
+            } else {
+                // PC端：左右两侧竖排布局（对联模式）
+                const fontSize = width < 1200 ? 50 : 60; 
+                const [leftText, rightText] = getSplitText(text);
+
+                offCtx.font = `bold ${fontSize}px "Microsoft YaHei", sans-serif`;
+                offCtx.fillStyle = '#fff';
+                offCtx.textAlign = 'center';
+                offCtx.textBaseline = 'top'; // 竖排从顶部开始绘制
+                
+                const lineHeight = fontSize * 1.2;
+                
+                // 绘制左侧竖排文字
+                const leftX = width * 0.15;
+                const totalHeight = Math.max(leftText.length, rightText.length) * lineHeight;
+                const startY = (height - totalHeight) / 2; // 垂直居中
+                
+                for (let i = 0; i < leftText.length; i++) {
+                    offCtx.fillText(leftText[i], leftX, startY + i * lineHeight);
+                }
+
+                // 绘制右侧竖排文字
+                const rightX = width * 0.85;
+                for (let i = 0; i < rightText.length; i++) {
+                    offCtx.fillText(rightText[i], rightX, startY + i * lineHeight);
+                }
+                
+                // offsetY = height * 0.2; // 整体垂直偏移 (已在 startY 计算中包含，设为0即可)
+            }
 
             // 获取像素数据
-            const imageData = offCtx.getImageData(0, 0, width, 200).data;
-            const gap = 4; // 采样间隔，越小粒子越密
+            const imageData = offCtx.getImageData(0, 0, width, offCanvas.height).data;
+            const gap = width < 800 ? 5 : 4; 
             const newTargets = [];
 
-            for (let y = 0; y < 200; y += gap) {
+            for (let y = 0; y < offCanvas.height; y += gap) {
                 for (let x = 0; x < width; x += gap) {
                     const index = (y * width + x) * 4;
-                    if (imageData[index + 3] > 128) { // 如果 Alpha > 128，说明有文字
-                        // 目标位置：屏幕顶部 + 偏移
-                        newTargets.push({ x: x, y: y + height * 0.15 }); 
+                    if (imageData[index + 3] > 128) { 
+                        // 目标位置：应用垂直偏移
+                        newTargets.push({ x: x, y: y + (isSmall ? offsetY : 0) }); // PC端已经在Canvas上定位好了，不需要额外OffsetY
                     }
                 }
             }
@@ -542,7 +794,10 @@
                 const perspective = 800;
                 const scale = perspective / (perspective + rz + 1000);
                 const screenX = rx * scale + width / 2;
-                const screenY = ry * scale + height / 2 + 200; // 树变大了，整体下移让位置更协调
+                
+                // 动态调整树的垂直位置
+                const treeOffset = height < 600 ? height * 0.2 : 200;
+                const screenY = ry * scale + height / 2 + treeOffset; 
                 
                 // 闪烁逻辑
                 let alpha = 1;
@@ -555,6 +810,15 @@
                 }
 
                 if (scale > 0) {
+                    // 装饰球添加光晕效果
+                    if (this.type === 'ornament') {
+                        ctx.fillStyle = this.color;
+                        ctx.globalAlpha = alpha * 0.4;
+                        ctx.beginPath();
+                        ctx.arc(screenX, screenY, this.size * scale * 2.5, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
                     ctx.fillStyle = this.color;
                     ctx.globalAlpha = alpha;
                     ctx.beginPath();
@@ -588,32 +852,78 @@
             }
         }
 
+        class ShootingStar {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height * 0.5;
+                this.len = Math.random() * 80 + 10;
+                this.speed = Math.random() * 10 + 6;
+                this.size = Math.random() * 1 + 0.1;
+                this.waitTime = new Date().getTime() + Math.random() * 3000 + 500;
+                this.active = false;
+            }
+            update() {
+                if (this.active) {
+                    this.x -= this.speed;
+                    this.y += this.speed;
+                    if (this.x < 0 || this.y >= height) {
+                        this.active = false;
+                        this.waitTime = new Date().getTime() + Math.random() * 3000 + 500;
+                    }
+                } else {
+                    if (this.waitTime < new Date().getTime()) {
+                        this.active = true;
+                        this.x = Math.random() * width;
+                        this.y = Math.random() * height * 0.2;
+                    }
+                }
+            }
+            render() {
+                if (this.active) {
+                    ctx.strokeStyle = 'rgba(255,255,255,' + Math.random() + ')';
+                    ctx.lineWidth = this.size;
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(this.x + this.len, this.y - this.len);
+                    ctx.stroke();
+                }
+            }
+        }
+
         class SnowParticle {
             constructor() {
                 this.reset();
             }
             reset() {
                 this.x = Math.random() * width;
-                this.y = Math.random() * -height; // 从屏幕上方随机位置开始
-                this.z = Math.random() * 0.8 + 0.2; // 深度系数，影响大小和速度
+                this.y = Math.random() * -height; 
+                this.z = Math.random() * 0.8 + 0.2; 
                 this.size = Math.random() * 2 + 1;
-                // 雪花加速：速度范围改为 2.5 ~ 5.5
-                this.speedY = Math.random() * 3 + 2.5; 
-                this.speedX = (Math.random() - 0.5) * 1.5; // 稍微增加横向飘动
+                this.speedY = Math.random() * 2 + 1.5; // 稍微减慢下落速度
+                this.speedX = (Math.random() - 0.5) * 0.5; // 基础风向
                 this.opacity = Math.random() * 0.6 + 0.4;
+                
+                // 摇摆属性
+                this.swing = Math.random() * 3; 
+                this.swingSpeed = Math.random() * 0.05 + 0.01;
+                this.angle = Math.random() * Math.PI * 2;
             }
             update() {
                 this.y += this.speedY * this.z;
-                this.x += this.speedX * this.z;
+                // 加入正弦波摇摆
+                this.angle += this.swingSpeed;
+                this.x += Math.sin(this.angle) * 0.5 + this.speedX * this.z;
                 
-                // 飘出屏幕底部或左右边界太远则重置
                 if (this.y > height || this.x > width + 100 || this.x < -100) {
                     this.reset();
-                    this.y = -10; // 确保从顶部重新开始
+                    this.y = -10; 
                 }
             }
             render() {
-                ctx.globalCompositeOperation = 'source-over'; // 雪花需要覆盖在背景上
+                ctx.globalCompositeOperation = 'source-over'; 
                 ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size * this.z, 0, Math.PI * 2);
@@ -627,6 +937,7 @@
             particles = [];
             snowParticles = []; // 重置雪花数组
             stars = []; // 重置星星数组
+            shootingStars = []; // 重置流星数组
             
             // 初始化星星
             const starCount = window.innerWidth < 500 ? 50 : 100;
@@ -634,14 +945,31 @@
                 stars.push(new Star());
             }
 
+            // 初始化流星
+            for(let i=0; i<2; i++) {
+                shootingStars.push(new ShootingStar());
+            }
+
             // 初始化更逼真的3D圣诞树
-            // 增大尺寸
-            const treeHeight = window.innerWidth < 500 ? 550 : 700; // 手机上稍微小一点，PC上大一点
-            const maxRadius = window.innerWidth < 500 ? 220 : 300;
-            // 增加粒子密度
-            const particleCount = window.innerWidth < 500 ? 1800 : 3000;
+            const isSmallScreen = window.innerWidth < 768 || window.innerHeight < 600;
+            const isMediumScreen = window.innerWidth >= 768 && window.innerWidth < 1200;
+
+            // 动态调整尺寸以适配不同屏幕
+            // 高度：根据屏幕高度自适应，但不超过上限
+            let treeHeight = Math.min(700, window.innerHeight * 0.7);
+            if (isSmallScreen) treeHeight = Math.min(550, window.innerHeight * 0.6);
             
-            for(let i = 0; i < particleCount; i++) {
+            // 半径：根据屏幕宽度自适应，但不超过上限
+            let maxRadius = Math.min(300, window.innerWidth * 0.25);
+            if (isSmallScreen) maxRadius = Math.min(220, window.innerWidth * 0.4);
+            if (isMediumScreen) maxRadius = Math.min(260, window.innerWidth * 0.3);
+            
+            // 增加粒子密度：根据面积估算
+            const particleCount = Math.floor(treeHeight * maxRadius / 60); 
+            // 限制粒子数量范围，避免过少或过多影响性能
+            const safeParticleCount = Math.max(1500, Math.min(particleCount, 4000));
+            
+            for(let i = 0; i < safeParticleCount; i++) {
                 // 使用螺旋分布生成圆锥体
                 const h = Math.random(); // 0 (顶端) 到 1 (底部)
                 const y = -treeHeight + h * treeHeight; // 映射到Y轴
@@ -712,7 +1040,31 @@
             
             // 渲染星星
             ctx.globalCompositeOperation = 'lighter';
+            
+            // 简单的视差缓动
+            parallaxX += (mouseX - parallaxX) * 0.05;
+            parallaxY += (mouseY - parallaxY) * 0.05;
+            
+            ctx.save();
+            ctx.translate(parallaxX, parallaxY); // 背景星星跟随鼠标移动
             stars.forEach(s => s.render());
+            ctx.restore();
+
+            // 渲染流星
+            shootingStars.forEach(s => {
+                s.update();
+                s.render();
+            });
+            
+            // 渲染鼠标拖尾
+            for (let i = trailParticles.length - 1; i >= 0; i--) {
+                const p = trailParticles[i];
+                p.update();
+                p.render();
+                if (p.life <= 0) {
+                    trailParticles.splice(i, 1);
+                }
+            }
 
             // 渲染树
             ctx.globalCompositeOperation = 'source-over';
@@ -737,7 +1089,13 @@
             requestAnimationFrame(animate);
         }
 
-        window.addEventListener('resize', () => { if(particles.length > 0) init(); });
+        let resizeTimeout;
+        window.addEventListener('resize', () => { 
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                if(particles.length > 0) init();
+            }, 200);
+        });
     </script>
 </body>
 </html>
